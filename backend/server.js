@@ -57,9 +57,20 @@ if (process.env.NODE_ENV !== 'production') {
       console.error('Database connection error:', err);
     });
 } else {
-  mongoose.connect(process.env.MONGODB_URI)
-    .then(() => console.log('Connected to MongoDB (Production)'))
-    .catch(err => console.error('DB Error:', err));
+  // In production (Vercel), we need to ensure the connection is handled correctly for serverless
+  // Mongoose 6+ maintains a connection pool, but for serverless we often want to await it 
+  // or use a middleware to ensure connection. For simplicity here, we'll just connect.
+  mongoose.connect(process.env.MONGODB_URI, {
+    serverSelectionTimeoutMS: 5000
+  })
+  .then(() => console.log('Connected to MongoDB (Production)'))
+  .catch(err => console.error('DB Error:', err));
 }
+
+// Global error handler for JSON responses
+app.use((err, req, res, next) => {
+  console.error(err.stack);
+  res.status(500).json({ error: 'A server error occurred', message: err.message });
+});
 
 export default app;
