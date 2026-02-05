@@ -44,14 +44,22 @@ app.get(/^(?!\/api).+/, (req, res) => {
 });
 
 // Database Connection
-mongoose
-  .connect(process.env.MONGODB_URI)
-  .then(() => {
-     console.log('Connected to MongoDB');
-    app.listen(PORT, () => {
-      console.log(`Server is running on port ${PORT}`);
+if (process.env.NODE_ENV !== 'production') {
+  mongoose
+    .connect(process.env.MONGODB_URI)
+    .then(() => {
+       console.log('Connected to MongoDB');
+      app.listen(PORT, () => {
+        console.log(`Server is running on port ${PORT}`);
+      });
+    })
+    .catch((err) => {
+      console.error('Database connection error:', err);
     });
-  })
-  .catch((err) => {
-    console.error('Database connection error:', err);
-  });
+} else {
+  mongoose.connect(process.env.MONGODB_URI)
+    .then(() => console.log('Connected to MongoDB (Production)'))
+    .catch(err => console.error('DB Error:', err));
+}
+
+export default app;
