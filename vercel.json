@@ -6,14 +6,8 @@
       "destination": "/api/index.js"
     },
     {
-      "source": "/(.*)",
-      "destination": "/frontend/dist/$1"
-    }
-  ],
-  "redirects": [
-    {
-      "source": "/",
-      "destination": "/frontend/dist/index.html"
+      "source": "/((?!api/).*)",
+      "destination": "/$1"
     }
   ]
 }
